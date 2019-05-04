@@ -23,3 +23,11 @@ export function getDetail(params) {
   })
 }
 
+export function detailExcelInput(formData) {
+  return request({
+    url: '/orderdetail/excelinput',
+    method: 'post',
+    data: formData
+  })
+}
+

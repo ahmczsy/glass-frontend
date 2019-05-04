@@ -41,7 +41,7 @@
           <router-link :to="'/order/detail?id='+scope.row.orderId">
             <el-button type="primary" size="small" icon="el-icon-edit">查看详情</el-button>
           </router-link>
-          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货订单</el-button>
+          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -127,7 +127,6 @@ export default {
 
       },
       uploadData: null,
-      uploadUrl: null,
       dialogFormVisible: false,
       excleDialogVisible: false,
       list: null,

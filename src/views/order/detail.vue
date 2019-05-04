@@ -1,24 +1,15 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-upload" @click="input">上传订单详情</el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-upload"
+        @click="input"
+      >上传订单详情
+      </el-button>
     </div>
-
-    <el-dialog :visible.sync="dialogFormVisible" title="导入数据">
-      <el-upload
-        drag
-        :action="uploadUrl"
-        accept=".xlsx"
-        :on-success="uploadSucess"
-        :on-error="uploadError"
-        :show-file-list="false"
-        name="file"
-      >
-        <i class="el-icon-upload" />
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div slot="tip" class="el-upload__tip">只能上传xlsx类型文件</div>
-      </el-upload>
-    </el-dialog>
 
     <el-table
       v-loading="listLoading"
@@ -70,15 +61,34 @@
       </el-table-column>
       <el-table-column align="center" label="导入类型">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.orderDetailType | statusFilter">{{ scope.row.orderDetailType | statusNameFilter }}</el-tag>
+          <el-tag :type="scope.row.orderDetailType | statusFilter">{{ scope.row.orderDetailType |
+            statusNameFilter }}
+          </el-tag>
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog :visible.sync="dialogFormVisible" title="导入数据">
+      <el-upload
+        drag
+        action=""
+        accept=".xlsx"
+        :show-file-list="false"
+        name="file"
+        :data="uploadData"
+        :http-request="startUpload"
+      >
+        <i class="el-icon-upload" />
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip">只能上传xlsx类型文件</div>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getDetail } from '@/api/order'
+import { getDetail, detailExcelInput } from '@/api/order'
+
 export default {
   filters: {
     statusFilter(status) {
@@ -98,7 +108,7 @@ export default {
   },
   data() {
     return {
-      uploadUrl: null,
+      uploadData: null,
       list: null,
       listLoading: true,
       dialogFormVisible: false
@@ -106,36 +116,24 @@ export default {
   },
   created() {
     const id = this.$route.query.id
-    this.uploadUrl = 'http://localhost:8080/orderdetail/excelinput?orderId=' + id
+    this.uploadData = { orderId: id }
+
     getDetail({ orderId: id }).then(res => {
       this.list = res.data
       this.listLoading = false
     })
   },
   methods: {
+    startUpload(params) {
+      const formData = new FormData()
+      formData.append('file', params.file)
+      formData.append('orderId', this.uploadData.orderId)
+      detailExcelInput(formData).then(res => {
+        this.$router.go(0)
+      })
+    },
     input() {
       this.dialogFormVisible = true
-    },
-    uploadSucess(res, file, fileList) {
-      if (res.code !== 20000) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
-        return
-      }
-      this.$message({
-        message: res.msg,
-        type: 'success'
-      })
-      this.dialogFormVisible = false
-      this.$router.go(0)
-    },
-    uploadError(err, file, fileList) {
-      this.$message({
-        message: err,
-        type: 'error'
-      })
     }
 
   }
