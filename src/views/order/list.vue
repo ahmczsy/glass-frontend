@@ -41,7 +41,7 @@
           <router-link :to="'/order/detail?id='+scope.row.orderId">
             <el-button type="primary" size="small" icon="el-icon-edit">查看详情</el-button>
           </router-link>
-          <!--<el-button type="primary" size="small" icon="el-icon-download" @click="downloadLicense(scope.row.id)">下载证书</el-button>-->
+          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货订单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -75,12 +75,29 @@
       </div>
     </el-dialog>
 
+    <el-dialog :visible.sync="excleDialogVisible" title="导入数据" width="30%">
+      <el-upload
+        drag
+        action=""
+        accept=".xlsx"
+        :http-request="upload"
+        :show-file-list="false"
+        name="file"
+        :data="uploadData"
+      >
+        <i class="el-icon-upload" />
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip">只能上传xlsx类型文件</div>
+      </el-upload>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { getOrderList, createOrder } from '@/api/order'
 import { getCustomerList } from '@/api/customer'
+import { createByExcel } from '@/api/bill'
 
 export default {
   filters: {
@@ -109,7 +126,10 @@ export default {
         customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }]
 
       },
+      uploadData: null,
+      uploadUrl: null,
       dialogFormVisible: false,
+      excleDialogVisible: false,
       list: null,
       listLoading: true,
       orderForm: {
@@ -124,6 +144,19 @@ export default {
     this.fetchData()
   },
   methods: {
+    upload(params) {
+      const formData = new FormData()
+      formData.append('file', params.file)
+      formData.append('orderId', this.uploadData.orderId)
+      formData.append('customerId', this.uploadData.customerId)
+      createByExcel(formData).then(res => {
+        this.$router.go(0)
+      })
+    },
+    createBill(orderId, customerId) {
+      this.uploadData = { orderId: orderId, customerId: customerId }
+      this.excleDialogVisible = true
+    },
     submit() {
       createOrder(JSON.stringify(this.orderForm)).then(res => {
         this.$message({

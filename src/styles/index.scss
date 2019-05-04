@@ -63,3 +63,6 @@ div:focus {
 .app-container {
   padding: 20px;
 }
+body .el-table th.gutter{
+  display: table-cell!important;
+}

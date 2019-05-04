@@ -75,6 +75,26 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/bill',
+    component: Layout,
+    name: '送货单',
+    children: [
+      {
+        path: 'list',
+        name: '送货单列表',
+        component: () => import('@/views/bill/list'),
+        meta: { title: '送货单列表', icon: 'table' }
+      },
+      {
+        path: 'detail',
+        name: '送货单详情',
+        hidden: true,
+        component: () => import('@/views/bill/detail'),
+        meta: { title: '送货单详情', icon: 'table' }
+      }
+    ]
+  },
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
