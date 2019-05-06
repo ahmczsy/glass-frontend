@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getOrderList(params) {
   return request({
-    url: '/order/findall',
+    url: '/order/findAll',
     method: 'get',
     params
   })
@@ -17,7 +17,7 @@ export function createOrder(params) {
 }
 export function getDetail(params) {
   return request({
-    url: '/orderdetail/findorderdetailbyorderid',
+    url: '/orderDetail/findByOrderId',
     method: 'get',
     params
   })
@@ -25,7 +25,7 @@ export function getDetail(params) {
 
 export function detailExcelInput(formData) {
   return request({
-    url: '/orderdetail/excelinput',
+    url: '/orderDetail/excelInput',
     method: 'post',
     data: formData
   })

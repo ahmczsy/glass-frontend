@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function createByExcel(formData) {
   return request({
-    url: '/bill/createbyexcel',
+    url: '/bill/createByExcel',
     method: 'post',
     data: formData
   })
@@ -10,7 +10,7 @@ export function createByExcel(formData) {
 
 export function findAll(data) {
   return request({
-    url: '/bill/findall',
+    url: '/bill/findAll',
     method: 'post',
     data: data
   })
@@ -18,7 +18,7 @@ export function findAll(data) {
 
 export function findDetailByBillId(param) {
   return request({
-    url: '/bill/finddetailbybillid',
+    url: '/bill/findDetailByBillId',
     method: 'get',
     params: param
   })
