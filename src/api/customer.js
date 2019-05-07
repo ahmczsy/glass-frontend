@@ -8,3 +8,18 @@ export function getCustomerList(params) {
   })
 }
 
+export function findByPage(params) {
+  return request({
+    url: '/customer/findByPage',
+    method: 'post',
+    data: params
+  })
+}
+export function setTrueName(params) {
+  return request({
+    url: '/customer/setTrueName',
+    method: 'post',
+    data: params
+  })
+}
+

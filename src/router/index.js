@@ -63,7 +63,7 @@ export const constantRoutes = [
         path: 'list',
         name: '订单列表',
         component: () => import('@/views/order/list'),
-        meta: { title: '订单列表', icon: 'table' }
+        meta: { title: '订单列表', icon: 'list' }
       },
       {
         path: 'detail',
@@ -83,7 +83,7 @@ export const constantRoutes = [
         path: 'list',
         name: '送货单列表',
         component: () => import('@/views/bill/list'),
-        meta: { title: '送货单列表', icon: 'table' }
+        meta: { title: '送货单列表', icon: 'form' }
       },
       {
         path: 'detail',
@@ -91,6 +91,20 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/bill/detail'),
         meta: { title: '送货单详情', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/customer',
+    component: Layout,
+    name: '客户管理',
+    meta: { title: '客户管理', icon: 'table' },
+    children: [
+      {
+        path: 'list',
+        name: '客户列表',
+        component: () => import('@/views/customer/list'),
+        meta: { title: '客户列表', icon: 'user' }
       }
     ]
   },
