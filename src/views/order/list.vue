@@ -134,7 +134,8 @@ export default {
       orderForm: {
         name: null,
         desc: '',
-        customerId: null
+        customerId: null,
+        openid:''
       },
       customerList: null
     }
@@ -157,6 +158,12 @@ export default {
       this.excleDialogVisible = true
     },
     submit(form) {
+
+      this.customerList.forEach(customer=>{
+        if (customer.id === this.orderForm.customerId){
+          this.orderForm.openid = customer.openid
+        }
+      })
       this.$refs[form].validate(valid => {
         if (valid) {
           createOrder(this.orderForm).then(res => {
@@ -183,7 +190,8 @@ export default {
       this.orderForm = {
         name: '',
         desc: '',
-        customerId: null
+        customerId: null,
+        openid:''
       }
     },
     fetchData() {
