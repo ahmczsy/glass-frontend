@@ -109,6 +109,25 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/dic',
+    component: Layout,
+    name: '字典管理',
+    meta: { title: '字典管理', icon: 'table' },
+    children: [
+      {
+        path: 'format',
+        name: '规格管理',
+        component: () => import('@/views/format/list'),
+        meta: { title: '规格管理', icon: 'user' }
+      }, {
+        path: 'qita',
+        name: '其他管理',
+        component: () => import('@/views/format/list'),
+        meta: { title: '其他管理', icon: 'user' }
+      }
+    ]
+  },
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',

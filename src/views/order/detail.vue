@@ -6,8 +6,24 @@
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-upload"
-        @click="input"
+        @click="dialogFormVisible=true"
       >上传订单详情
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="dialogOrderStatus=true"
+      >修改订单状态
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="dialogManualAdd=true"
+      >手动添加
       </el-button>
     </div>
 
@@ -83,11 +99,49 @@
         <div slot="tip" class="el-upload__tip">只能上传xlsx类型文件</div>
       </el-upload>
     </el-dialog>
+
+    <el-dialog :visible.sync="dialogOrderStatus" title="修改订单状态">
+      <el-radio-group v-model="order.orderStatus">
+        <el-radio :label="1">进行中</el-radio>
+        <el-radio :label="3">已完成</el-radio>
+        <el-radio :label="2">已关闭</el-radio>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogOrderStatus = false">取消</el-button>
+        <el-button type="primary" @click="updateOrderStatus()">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :visible.sync="dialogManualAdd" title="添加订单详情">
+      <vxe-table
+        ref="xTable"
+        border
+        show-all-overflow
+        :data.sync="manualInputList"
+        :mouse-config="{selected: true}"
+        :keyboard-config="{isArray: true, isTab: true, isEdit: true}"
+        :edit-config="{key: 'index', trigger: 'dblclick', mode: 'cell'}"
+        @edit-actived="editActived"
+        @edit-closed="editClosed"
+      >
+        <vxe-table-column prop="index" label="序号" width="60" />
+        <vxe-table-column prop="height" label="长" :edit-render="{name: 'input'}" />
+        <vxe-table-column prop="width" label="宽" :edit-render="{name: 'input'}" />
+        <vxe-table-column prop="amount" label="数量" :edit-render="{name: 'input'}" />
+        <vxe-table-column prop="formatId" label="规格ID" :edit-render="{name: 'input'}" width="60" />
+        <vxe-table-column prop="format" label="规格" />
+        <vxe-table-column prop="remark" label="备注" :edit-render="{name: 'input'}" />
+      </vxe-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogManualAdd = false">取消</el-button>
+        <el-button type="primary">提交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getDetail, detailExcelInput } from '@/api/order'
+import { getDetail, detailExcelInput, updateOrder } from '@/api/order'
 
 export default {
   filters: {
@@ -108,14 +162,20 @@ export default {
   },
   data() {
     return {
+      order: null,
       uploadData: null,
       list: null,
       listLoading: true,
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      dialogOrderStatus: false,
+      dialogManualAdd: false,
+      manualInputList: [{ index: 1 }],
+      formatList: [{ id: 1, name: '5+5' }, { id: 2, name: '5+10' }]
     }
   },
   created() {
-    const id = this.$route.query.id
+    this.order = this.$route.query.order
+    const id = this.order.orderId
     this.uploadData = { orderId: id }
 
     getDetail({ orderId: id }).then(res => {
@@ -132,8 +192,29 @@ export default {
         this.$router.go(0)
       })
     },
-    input() {
-      this.dialogFormVisible = true
+    updateOrderStatus() {
+      updateOrder({ orderId: this.order.orderId, orderStatus: this.order.orderStatus }).then(res => {
+        this.dialogOrderStatus = false
+      })
+    },
+    editActived(event) {
+      if (event.rowIndex === this.manualInputList.length - 1) {
+        this.manualInputList.push({ index: this.manualInputList.length + 1 })
+      }
+    },
+    editClosed(event) {
+      console.log(event)
+      if (event.$columnIndex !== 4) {
+        return true
+      }
+      const id = event.row.formatId
+      let format = ''
+      this.formatList.forEach(item => {
+        if (item.id.toString() === id) {
+          format = item.name
+        }
+      })
+      this.manualInputList[event.rowIndex].format = format
     }
 
   }

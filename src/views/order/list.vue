@@ -38,9 +38,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <router-link :to="'/order/detail?id='+scope.row.orderId">
-            <el-button type="primary" size="small" icon="el-icon-edit">查看详情</el-button>
-          </router-link>
+          <!--          <router-link :to="'/order/detail?id='+scope.row.orderId">-->
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="gotoDetai(scope.row)">查看详情</el-button>
+          <!--          </router-link>-->
           <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>
         </template>
       </el-table-column>
@@ -103,15 +103,17 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        1: 'success',
-        2: 'info'
+        1: '',
+        2: 'info',
+        3: 'success'
       }
       return statusMap[status]
     },
     statusNameFilter(status) {
       const statusMap = {
         1: '进行中',
-        2: '已关闭'
+        2: '已关闭',
+        3: '已完成'
       }
       return statusMap[status]
     }
@@ -135,7 +137,7 @@ export default {
         name: null,
         desc: '',
         customerId: null,
-        openid:''
+        openid: ''
       },
       customerList: null
     }
@@ -157,10 +159,12 @@ export default {
       this.uploadData = { orderId: orderId, customerId: customerId }
       this.excleDialogVisible = true
     },
+    gotoDetai(order) {
+      this.$router.push({ path: '/order/detail', query: { order: order }})
+    },
     submit(form) {
-
-      this.customerList.forEach(customer=>{
-        if (customer.id === this.orderForm.customerId){
+      this.customerList.forEach(customer => {
+        if (customer.id === this.orderForm.customerId) {
           this.orderForm.openid = customer.openid
         }
       })
@@ -191,7 +195,7 @@ export default {
         name: '',
         desc: '',
         customerId: null,
-        openid:''
+        openid: ''
       }
     },
     fetchData() {

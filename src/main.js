@@ -15,6 +15,9 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import VXETable from 'vxe-table'
+import 'vxe-table/lib/index.css'
+
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception
@@ -26,6 +29,7 @@ import '@/permission' // permission control
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
+Vue.use(VXETable)
 
 Vue.config.productionTip = false
 

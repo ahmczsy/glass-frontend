@@ -31,3 +31,11 @@ export function detailExcelInput(formData) {
   })
 }
 
+export function updateOrder(formData) {
+  return request({
+    url: '/order/update',
+    method: 'post',
+    data: formData
+  })
+}
+
