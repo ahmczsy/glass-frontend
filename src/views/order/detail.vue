@@ -22,7 +22,7 @@
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-edit"
-        @click="dialogManualAdd=true"
+        @click="manualAddInit"
       >手动添加
       </el-button>
     </div>
@@ -113,11 +113,13 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogManualAdd" title="添加订单详情">
+      <el-button type="warning"  size="small" @click="resetDialogData">重置数据</el-button>
       <vxe-table
         ref="xTable"
         border
         show-all-overflow
-        :data.sync="manualInputList"
+        :data.sync="addList"
+        :edit-rules="addRules"
         :mouse-config="{selected: true}"
         :keyboard-config="{isArray: true, isTab: true, isEdit: true}"
         :edit-config="{key: 'index', trigger: 'dblclick', mode: 'cell'}"
@@ -130,11 +132,17 @@
         <vxe-table-column prop="amount" label="数量" :edit-render="{name: 'input'}" />
         <vxe-table-column prop="formatId" label="规格ID" :edit-render="{name: 'input'}" width="60" />
         <vxe-table-column prop="format" label="规格" />
+        <vxe-table-column prop="price" label="单价" :edit-render="{name: 'input'}" />
         <vxe-table-column prop="remark" label="备注" :edit-render="{name: 'input'}" />
+        <vxe-table-column  label="操作"  v-slot="{ row }">
+          <template >
+            <vxe-button @click="deleteRow(row)">删除</vxe-button>
+          </template>
+        </vxe-table-column>
       </vxe-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogManualAdd = false">取消</el-button>
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="manualSumbit">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -142,6 +150,7 @@
 
 <script>
 import { getDetail, detailExcelInput, updateOrder } from '@/api/order'
+import { findAll as formatFindAll } from '@/api/format'
 
 export default {
   filters: {
@@ -169,8 +178,25 @@ export default {
       dialogFormVisible: false,
       dialogOrderStatus: false,
       dialogManualAdd: false,
-      manualInputList: [{ index: 1 }],
-      formatList: [{ id: 1, name: '5+5' }, { id: 2, name: '5+10' }]
+      addList: [{ index: 1 }],
+      formatList: [],
+      addRules:{
+        height:[
+          {required: true, message: '长度必须填写' },
+          {type:'number',message:'必须为数字'}],
+        width:[
+          {required: true, message: '宽度必须填写' },
+          {type:'number',message:'必须为数字'}],
+        amount:[
+          {required: true, message: '数量必须填写' },
+          {type:'number',message:'必须为数字'}],
+        format:[
+          {required: true, message: '规格ID错误' }],
+        price:[
+          {required: true, message: '单价必须填写' },
+          {type:'number',message:'必须为数字'}]
+      }
+
     }
   },
   created() {
@@ -197,13 +223,30 @@ export default {
         this.dialogOrderStatus = false
       })
     },
+    manualAddInit(){
+      formatFindAll().then(res=>{
+          this.formatList = res.data
+        this.dialogManualAdd=true
+      })
+    },
+    manualSumbit(){
+      this.$refs.xTable.validate(valid => {
+        console.log(valid)
+      })
+    },
     editActived(event) {
-      if (event.rowIndex === this.manualInputList.length - 1) {
-        this.manualInputList.push({ index: this.manualInputList.length + 1 })
+      if (event.rowIndex === this.addList.length - 1) {
+        this.addList.push({ index: this.addList.length + 1 })
+        // this.$refs.xTable.insertAt({index:1},-1)
       }
     },
+    deleteRow(row){
+      this.addList.splice(row.index-1,1)
+      this.addList.map((v,i)=>{
+        v.index =i+1
+      })
+    },
     editClosed(event) {
-      console.log(event)
       if (event.$columnIndex !== 4) {
         return true
       }
@@ -214,7 +257,10 @@ export default {
           format = item.name
         }
       })
-      this.manualInputList[event.rowIndex].format = format
+      this.addList[event.rowIndex].format = format
+    },
+    resetDialogData(){
+      this.addList=[{ index: 1 }]
     }
 
   }

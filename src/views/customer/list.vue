@@ -99,7 +99,7 @@ export default {
         curPage: 1,
         capacity: 15
       },
-      newFormat: { name: '' }
+      customerUpdateForm: { name: '' }
     }
   },
   created() {
@@ -109,7 +109,7 @@ export default {
     submit(updateForm) {
       this.$refs[updateForm].validate((valid) => {
         if (valid) {
-          setTrueName(this.newFormat).then(res => {
+          setTrueName(this.customerUpdateForm).then(res => {
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -124,8 +124,8 @@ export default {
     },
     showUpdateDialog(customerId) {
       this.dialogVisible = true
-      this.newFormat.id = customerId
-      this.newFormat.name = ''
+      this.customerUpdateForm.id = customerId
+      this.customerUpdateForm.name = ''
     },
     fetchData() {
       this.listLoading = true
