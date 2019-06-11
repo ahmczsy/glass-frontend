@@ -113,16 +113,15 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogManualAdd" title="添加订单详情">
-      <el-button type="warning"  size="small" @click="resetDialogData">重置数据</el-button>
+      <el-button type="warning" @click="resetDialogData">重置数据</el-button>
       <vxe-table
         ref="xTable"
         border
         show-all-overflow
         :data.sync="addList"
-        :edit-rules="addRules"
         :mouse-config="{selected: true}"
         :keyboard-config="{isArray: true, isTab: true, isEdit: true}"
-        :edit-config="{key: 'index', trigger: 'dblclick', mode: 'cell'}"
+        :edit-config="{key: 'index', trigger: 'click', mode: 'cell'}"
         @edit-actived="editActived"
         @edit-closed="editClosed"
       >
@@ -247,9 +246,11 @@ export default {
       })
     },
     editClosed(event) {
+      console.log(event)
       if (event.$columnIndex !== 4) {
-        return true
+        return
       }
+      console.log("=======")
       const id = event.row.formatId
       let format = ''
       this.formatList.forEach(item => {
