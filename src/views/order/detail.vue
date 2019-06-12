@@ -115,17 +115,17 @@
     <el-dialog :visible.sync="dialogManualAdd" title="添加订单详情">
       <el-button type="warning" @click="resetDialogData">重置数据</el-button>
       <vxe-table
-        ref="xTable"
+        ref="refTable"
         border
         show-all-overflow
         :data.sync="addList"
+        :edit-rules="addRules"
         :mouse-config="{selected: true}"
         :keyboard-config="{isArray: true, isTab: true, isEdit: true}"
-        :edit-config="{key: 'index', trigger: 'click', mode: 'cell'}"
+        :edit-config="{key: 'key', trigger: 'click', mode: 'cell'}"
         @edit-actived="editActived"
         @edit-closed="editClosed"
       >
-        <vxe-table-column prop="index" label="序号" width="60" />
         <vxe-table-column prop="height" label="长" :edit-render="{name: 'input'}" />
         <vxe-table-column prop="width" label="宽" :edit-render="{name: 'input'}" />
         <vxe-table-column prop="amount" label="数量" :edit-render="{name: 'input'}" />
@@ -177,7 +177,7 @@ export default {
       dialogFormVisible: false,
       dialogOrderStatus: false,
       dialogManualAdd: false,
-      addList: [{ index: 1 }],
+      addList: [{ key: new Date() }],
       formatList: [],
       addRules:{
         height:[
@@ -189,8 +189,8 @@ export default {
         amount:[
           {required: true, message: '数量必须填写' },
           {type:'number',message:'必须为数字'}],
-        format:[
-          {required: true, message: '规格ID错误' }],
+        // format:[
+        //   {required: true, message: '规格ID错误' }],
         price:[
           {required: true, message: '单价必须填写' },
           {type:'number',message:'必须为数字'}]
@@ -223,10 +223,12 @@ export default {
       })
     },
     manualAddInit(){
-      formatFindAll().then(res=>{
-          this.formatList = res.data
-        this.dialogManualAdd=true
-      })
+      // formatFindAll().then(res=>{
+      //     this.formatList = res.data
+      //   this.dialogManualAdd=true
+      // })
+      this.$router.push({ path: '/order/manualAdd', query: { order: this.order }})
+
     },
     manualSumbit(){
       this.$refs.xTable.validate(valid => {
@@ -234,19 +236,21 @@ export default {
       })
     },
     editActived(event) {
-      if (event.rowIndex === this.addList.length - 1) {
-        this.addList.push({ index: this.addList.length + 1 })
-        // this.$refs.xTable.insertAt({index:1},-1)
+      // let records = this.$refs.refTable.getRecords()
+      // console.log(records.length-1 +"  "+event.rowIndex)
+      // if (event.rowIndex === this.addList.length - 1) {
+      if (event.rowIndex === (this.addList.length - 1)) {
+        this.addList.push({ key: new Date().getTime()})
+        // this.$refs.refTable.insertAt({index:new Date()},-1)
       }
     },
     deleteRow(row){
       this.addList.splice(row.index-1,1)
-      this.addList.map((v,i)=>{
-        v.index =i+1
-      })
+      // this.addList.map((v,i)=>{
+      //   v.index =i+1
+      // })
     },
     editClosed(event) {
-      console.log(event)
       if (event.$columnIndex !== 4) {
         return
       }

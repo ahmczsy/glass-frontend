@@ -58,12 +58,21 @@ export const constantRoutes = [
     path: '/order',
     component: Layout,
     name: '订单',
+    meta: { title: '订单管理', icon: 'list' },
     children: [
       {
         path: 'list',
         name: '订单列表',
         component: () => import('@/views/order/list'),
-        meta: { title: '订单列表', icon: 'list' }
+        meta: { title: '订单列表', icon: 'list' },
+
+      },
+      {
+        hidden: true,
+        path: 'manualAdd',
+        name: '手动录入订单详情',
+        component: () => import('@/views/order/addDetail/manualAdd'),
+        meta: { title: '手动录入订单详情', icon: 'table' }
       },
       {
         path: 'detail',

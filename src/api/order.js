@@ -39,3 +39,10 @@ export function updateOrder(formData) {
   })
 }
 
+export function manualInput(params) {
+  return request({
+    url: '/orderDetail/manualInput',
+    method: 'post',
+    data: params
+  })
+}
