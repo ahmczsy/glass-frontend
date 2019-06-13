@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
     <el-button type="warning" @click="resetDialogData">重置数据</el-button>
     <vxe-table
       ref="refTable"
@@ -13,12 +14,12 @@
       @edit-actived="editActived"
       @edit-closed="editClosed"
     >
-      <vxe-table-column prop="height" label="长" :edit-render="{name: 'input'}" />
-      <vxe-table-column prop="width" label="宽" :edit-render="{name: 'input'}" />
+      <vxe-table-column prop="height" label="长(mm)" :edit-render="{name: 'input'}" />
+      <vxe-table-column prop="width" label="宽(mm)" :edit-render="{name: 'input'}" />
       <vxe-table-column prop="amount" label="数量" :edit-render="{name: 'input'}" />
-      <vxe-table-column prop="formatId" label="规格ID" :edit-render="{name: 'input'}" width="60" />
+      <vxe-table-column prop="formatId" label="规格ID" :edit-render="{name: 'input'}" width="80" />
       <vxe-table-column prop="format" label="规格" />
-      <vxe-table-column prop="price" label="单价" :edit-render="{name: 'input'}" />
+      <vxe-table-column prop="price" label="单价(元)" :edit-render="{name: 'input'}" />
       <vxe-table-column prop="remark" label="备注" :edit-render="{name: 'input'}" />
       <vxe-table-column v-slot="{ row }" label="操作">
         <template>
@@ -69,13 +70,6 @@ export default {
     })
   },
   methods: {
-
-    manualAddInit() {
-      formatFindAll().then(res => {
-        this.formatList = res.data
-        this.dialogManualAdd = true
-      })
-    },
     manualSumbit() {
       this.$refs.refTable.validate(valid => {
         if (!valid) {
@@ -89,7 +83,7 @@ export default {
           item.price = parseFloat(item.price)
         })
         manualInput({ orderId: this.order.orderId, detailList: this.addList }).then(res => {
-          console.log(res)
+          this.$router.push({ path: '/order/detail', query: { order: this.order }})
         })
       })
     },
@@ -99,7 +93,6 @@ export default {
       }
     },
     deleteRow(row) {
-      console.log(row)
       let index = 0
       this.addList.map((item, i) => {
         if (item.key === row.key) {
@@ -124,6 +117,9 @@ export default {
     },
     resetDialogData() {
       this.addList = [{ key: new Date().getTime() }]
+    },
+    returnDetail() {
+      this.$router.push({ path: '/order/detail', query: { order: this.order }})
     }
 
   }
