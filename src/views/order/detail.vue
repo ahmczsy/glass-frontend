@@ -25,6 +25,14 @@
         @click="manualAddInit"
       >手动添加订单详情
       </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="deliveryInit"
+      >新建送货单
+      </el-button>
     </div>
 
     <el-table
@@ -38,6 +46,11 @@
       <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="规格">
+        <template slot-scope="scope">
+          {{ scope.row.format }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="宽度(mm)">
@@ -194,6 +207,9 @@ export default {
         // return
       }
       this.$router.push({ path: '/order/manualAdd', query: { order: this.order }})
+    },
+    deliveryInit(){
+      this.$router.push({ path: '/order/createDelivery', query: { order: this.order }})
     }
   }
 }

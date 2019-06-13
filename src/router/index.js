@@ -75,6 +75,13 @@ export const constantRoutes = [
         meta: { title: '手动录入订单详情', icon: 'table' }
       },
       {
+        hidden: true,
+        path: 'createDelivery',
+        name: '创建送货单',
+        component: () => import('@/views/order/createDelivery'),
+        meta: { title: '创建送货单', icon: 'table' }
+      },
+      {
         path: 'detail',
         name: '订单详情',
         hidden: true,
