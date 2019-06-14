@@ -209,7 +209,7 @@ export default {
       this.$router.push({ path: '/order/manualAdd', query: { order: this.order }})
     },
     deliveryInit(){
-      this.$router.push({ path: '/order/createDelivery', query: { order: this.order }})
+      this.$router.push({ path: '/order/createDelivery', query: { order: this.order,orderDetailList:this.list }})
     }
   }
 }
