@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
-    <!--<el-button type="warning" @click="resetDialogData">重置数据</el-button>-->
     <el-table
       :data="billItem"
       element-loading-text="Loading"
@@ -31,29 +30,56 @@
               v-for="item in detailOption"
               :key="item.orderDetailId"
               :label="item.show"
-              :value="item.orderDetailId">
-            </el-option>
+              :value="item.orderDetailId"
+            />
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="送货数量">
+      <el-table-column align="center" :label="maxAmount |showAmount">
         <template slot-scope="scope">
-          <el-input-number v-model="scope.row.remark" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+          <el-input-number v-model="scope.row.amount" :min="1" :max="maxAmount" label="描述文字" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="楼号">
+        <template slot-scope="scope">
+          <el-input v-model="scope.row.buildNo" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="备注">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.remark" placeholder="请输入内容"></el-input>
+          <el-input v-model="scope.row.remark" />
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <el-button type="primary" plain @click="addBill">添加</el-button>
+      </el-table-column>
     </el-table>
+
+    <div style="margin-top: 50px">
+      <el-button type="primary" @click="dialogOther=true">添加送货单其他费用</el-button>
+    </div>
+    <div style="margin-top: 5px;width: 50%">
+      <el-form ref="form" label-width="80px">
+        <el-form-item label="送货地址">
+          <el-input v-model="deliveryData.address" placeholder="送货地址"  />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="deliveryData.remark" placeholder="送货单的总备注" />
+        </el-form-item>
+      </el-form>
+    </div>
     <el-table
-      :data="sumitBillItem"
+      :data="deliveryData.item"
       element-loading-text="Loading"
       border
       fit
       highlight-current-row
     >
+      <el-table-column align="center" label="楼号">
+        <template slot-scope="scope">
+          {{ scope.row.buildNo }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="规格">
         <template slot-scope="scope">
           {{ scope.row.format }}
@@ -69,19 +95,24 @@
           {{ scope.row.height }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="数量">
+      <el-table-column align="center" label="送货数量">
         <template slot-scope="scope">
           {{ scope.row.amount }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="面积(m²)">
+      <el-table-column align="center" label="总面积(m²)">
         <template slot-scope="scope">
-          {{ scope.row.area }}
+          {{ scope.row.totalArea }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="单价(元)">
         <template slot-scope="scope">
-          {{ scope.row.price }}
+          {{ scope.row.unitPrice }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="总价(元)">
+        <template slot-scope="scope">
+          {{ scope.row.totalPrice }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="备注">
@@ -89,11 +120,31 @@
           {{ scope.row.remark }}
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="scope">
+          <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
+    <el-dialog :visible.sync="dialogOther" title="添加其他费用">
+      <el-form ref="form" >
+        <el-form-item label="价格">
+          <el-input v-model="deliveryData.address" placeholder="价格"/>
+        </el-form-item>
+        <el-form-item label="说明">
+          <el-input v-model="deliveryData.remark" placeholder="详细说明" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogOther = false">取消</el-button>
+        <el-button type="primary" @click="addOther">提交</el-button>
+      </div>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -101,67 +152,143 @@ import { manualInput } from '@/api/order'
 import { findAll as formatFindAll } from '@/api/format'
 
 export default {
+  filters: {
+    showAmount(maxAmount) {
+      return '送货数量(最多:' + maxAmount + ')'
+    }
+  },
   data() {
     return {
-      billItem:[{
-        orderDetailId:null,
-        height:null,
-        width:null,
-        amount:null,
-      }],
-      currentOrderId:null,
-      currentOrderDetail:null,
+      dialogOther: false,
+      billItem: [{}],
+      maxAmount: 9999,
+      currentOrderId: null,
+      currentOrderDetail: null,
       order: null,
-      orderDetailList:null,
-      detailOption:null,
-      sumitBillItem:[],
-      deliveryData:{
-        address:'',
+      orderDetailList: null,
+      selectedOrderDetailList: [],
+      detailOption: null,
+      sumitBillItem: [],
+      deliveryData: {
+        address: '',
+        item: [],
+        other: [],
+        // glassPrice: null,
+        // otherPrice: null,
+        // totalPrice: null,
+        remark: null
       }
 
     }
   },
   created() {
     this.order = this.$route.query.order
-    this.orderDetailList= this.$route.query.orderDetailList
-
-    this.detailOption = this.orderDetailList.map((item,index)=>{
-       return {
-         show:item.format +'   '+item.height+'×'+item.width,
-         orderDetailId:item.orderDetailId
-       }
-    })
-
+    this.orderDetailList = this.$route.query.orderDetailList
+    this.resetBillItem()
+    this.buildDetailOption()
   },
   methods: {
-    submit(){
+    addBill() {
+      let msg = null
+      const data = this.billItem[0]
+      if (data.buildNo === null || data.buildNo.trim() === '') {
+        msg = '请输入楼号'
+      }
+      if (data.amount === null || data.amount === 0) {
+        msg = '请输入送货数量'
+      }
+      if (data.orderDetailId === null || data.orderDetailId === 0) {
+        msg = '请选择玻璃尺寸'
+      }
+      if (msg !== null) {
+        this.$message({
+          message: msg,
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return
+      }
+      // 验证通过
+      console.log(data)
+      data.totalArea = data.height * data.width * data.amount / 1000000
+      data.totalPrice = data.unitPrice * data.totalArea
+      this.deliveryData.item.push(data)
+
+      // 从orderDetailList，detailOption移除，添加到selectedOrderDetailList中
+      const detail = this.findDetailById(data.orderDetailId)
+      this.selectedOrderDetailList.push(detail)
+      this.orderDetailList = this.orderDetailList.filter(item => {
+        return item.orderDetailId !== detail.orderDetailId
+      })
+      this.buildDetailOption()
+      // 清空
+      this.currentOrderDetail = null
+      this.currentOrderId = null
+      this.maxAmount = 9999
+      this.resetBillItem()
+      console.log(this.selectedOrderDetailList)
+      console.log(this.orderDetailList)
+    },
+    deleteBill(row) {
+      const orderDetailId = row.orderDetailId
+
+      const orderDetail = this.selectedOrderDetailList.find(item => {
+        return item.orderDetailId === orderDetailId
+      })
+
+      this.orderDetailList.push(orderDetail)
+      this.buildDetailOption()
+      this.selectedOrderDetailList = this.selectedOrderDetailList.filter(item => {
+        return item.orderDetailId !== orderDetailId
+      })
+
+      this.deliveryData.item = this.deliveryData.item.filter(item => {
+        return item.orderDetailId !== orderDetailId
+      })
+    },
+    submit() {
 
     },
-    orderDetailChange(orderDetailId){
-      let orderDetail = this.findDetailById(orderDetailId)
-      this.currentOrderDetail= orderDetail
+    orderDetailChange(orderDetailId) {
+      const orderDetail = this.findDetailById(orderDetailId)
+      this.currentOrderDetail = orderDetail
+      this.maxAmount = orderDetail.amount
       this.billItem[0].orderDetailId = orderDetail.orderDetailId
       this.billItem[0].height = orderDetail.height
       this.billItem[0].width = orderDetail.width
       this.billItem[0].format = orderDetail.format
-
+      this.billItem[0].unitPrice = orderDetail.price
     },
     returnDetail() {
       this.$router.push({ path: '/order/detail', query: { order: this.order }})
     },
-    deleteRow(row) {
-      let index = 0
-      this.deliveryData.list.map((item, i) => {
-        if (item.key === row.key) {
-          index = i
-        }
-      })
-      this.addList.splice(index, 1)
-    },
-    findDetailById(id){
-      return this.orderDetailList.find(item=>{
+    findDetailById(id) {
+      return this.orderDetailList.find(item => {
         return item.orderDetailId === id
       })
+    },
+    buildDetailOption() {
+      this.detailOption = this.orderDetailList.map((item, index) => {
+        return {
+          show: item.format + '   ' + item.height + '×' + item.width,
+          orderDetailId: item.orderDetailId
+        }
+      })
+    },
+    resetBillItem() {
+      this.billItem[0] = {
+        orderDetailId: null,
+        height: null,
+        width: null,
+        amount: null,
+        buildNo: null,
+        remark: null,
+        format: null,
+        unitPrice: null
+      }
+    },
+    addOther() {
+
     }
 
   }
