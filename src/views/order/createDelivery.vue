@@ -61,7 +61,7 @@
     <div style="margin-top: 5px;width: 50%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="送货地址">
-          <el-input v-model="deliveryData.address" placeholder="送货地址"  />
+          <el-input v-model="deliveryData.address" placeholder="送货地址" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="deliveryData.remark" placeholder="送货单的总备注" />
@@ -155,12 +155,12 @@
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <el-dialog :visible.sync="dialogOther" title="添加其他费用">
-      <el-form ref="otherForm"  :rules="otherRules"  :model="tempOtherItem">
+      <el-form ref="otherForm" :rules="otherRules" :model="tempOtherItem">
         <el-form-item label="价格" prop="price" required>
           <!--<el-input v-model="tempOtherItem.price" placeholder="价格" />-->
-          <el-input-number v-model="tempOtherItem.price"  :min="1" :max="10"/>
+          <el-input-number v-model="tempOtherItem.price" :min="1" :max="10" />
         </el-form-item>
-        <el-form-item label="说明" prop="desc" required >
+        <el-form-item label="说明" prop="desc" required>
           <el-input v-model="tempOtherItem.desc" placeholder="详细说明" />
         </el-form-item>
       </el-form>
@@ -204,10 +204,10 @@ export default {
         // totalPrice: null,
         remark: null
       },
-      tempOtherItem:{},
-      otherRules:{
+      tempOtherItem: {},
+      otherRules: {
         desc: [{ required: true, message: '请输入说明' }],
-        price:[{ required: true, message: '请输入价格' }]
+        price: [{ required: true, message: '请输入价格' }]
       }
 
     }
@@ -319,7 +319,7 @@ export default {
       }
     },
     addOther() {
-      this.$refs["otherForm"].validate(valid=>{
+      this.$refs['otherForm'].validate(valid => {
         console.log(valid)
       })
     }
