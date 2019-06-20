@@ -126,16 +126,42 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-table
+      :data="deliveryData.other"
+      element-loading-text="Loading"
+      border
+      fit
+      highlight-current-row
+      width="100%"
+    >
+      <el-table-column align="center" label="价格" width="50px">
+        <template slot-scope="scope">
+          {{ scope.row.price }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="说明" width="100px">
+        <template slot-scope="scope">
+          {{ scope.row.desc }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作" width="50px">
+        <template slot-scope="scope">
+          <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <el-dialog :visible.sync="dialogOther" title="添加其他费用">
-      <el-form ref="form" >
-        <el-form-item label="价格">
-          <el-input v-model="deliveryData.address" placeholder="价格"/>
+      <el-form ref="otherForm"  :rules="otherRules"  :model="tempOtherItem">
+        <el-form-item label="价格" prop="price" required>
+          <!--<el-input v-model="tempOtherItem.price" placeholder="价格" />-->
+          <el-input-number v-model="tempOtherItem.price"  :min="1" :max="10"/>
         </el-form-item>
-        <el-form-item label="说明">
-          <el-input v-model="deliveryData.remark" placeholder="详细说明" />
+        <el-form-item label="说明" prop="desc" required >
+          <el-input v-model="tempOtherItem.desc" placeholder="详细说明" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -177,6 +203,11 @@ export default {
         // otherPrice: null,
         // totalPrice: null,
         remark: null
+      },
+      tempOtherItem:{},
+      otherRules:{
+        desc: [{ required: true, message: '请输入说明' }],
+        price:[{ required: true, message: '请输入价格' }]
       }
 
     }
@@ -288,7 +319,9 @@ export default {
       }
     },
     addOther() {
-
+      this.$refs["otherForm"].validate(valid=>{
+        console.log(valid)
+      })
     }
 
   }
