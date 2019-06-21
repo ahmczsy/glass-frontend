@@ -60,7 +60,7 @@
     </div>
     <div style="margin-top: 5px;width: 50%">
       <el-form ref="form" label-width="80px">
-        <el-form-item label="送货地址">
+        <el-form-item label="送货地址" required>
           <el-input v-model="deliveryData.address" placeholder="送货地址" />
         </el-form-item>
         <el-form-item label="备注">
@@ -75,6 +75,8 @@
       fit
       highlight-current-row
     >
+      <el-table-column align="left" label="送货单列表:" >
+
       <el-table-column align="center" label="楼号">
         <template slot-scope="scope">
           {{ scope.row.buildNo }}
@@ -120,12 +122,15 @@
           {{ scope.row.remark }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作"  width="120px">
         <template slot-scope="scope">
           <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
         </template>
       </el-table-column>
+      </el-table-column>
     </el-table>
+
+    <el-row style="margin-top: 20px" type="flex" justify="end">
     <el-table
       :data="deliveryData.other"
       element-loading-text="Loading"
@@ -134,31 +139,64 @@
       highlight-current-row
       width="100%"
     >
-      <el-table-column align="center" label="价格" width="50px">
+      <el-table-column align="left" label="其他费用:" >
+      <el-table-column align="center" label="价格" width="90px">
         <template slot-scope="scope">
           {{ scope.row.price }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="说明" width="100px">
+      <el-table-column align="center" label="说明">
         <template slot-scope="scope">
           {{ scope.row.desc }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="50px">
+      <el-table-column align="center" label="操作" width="120px">
         <template slot-scope="scope">
-          <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
+          <el-button type="danger" plain @click="deleteOther(scope)">删除</el-button>
         </template>
       </el-table-column>
+      </el-table-column>
     </el-table>
+  </el-row>
 
-    <div slot="footer" class="dialog-footer">
+    <el-row type="flex" justify="center" style="margin-top: 20px;">
+      <el-table
+        :data="statisticsData"
+        element-loading-text="Loading"
+        border
+        fit
+        highlight-current-row
+        width="100%"
+      >
+        <el-table-column align="left" label="统计信息:" >
+        <el-table-column align="center" label="玻璃费用" >
+          <template slot-scope="scope">
+          {{ scope.row.glassPrice }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="其他费用">
+          <template slot-scope="scope">
+          {{ scope.row.otherPrice }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="总费用" >
+          <template slot-scope="scope">
+          {{ scope.row.totalPrice }}
+          </template>
+        </el-table-column>
+        </el-table-column>
+      </el-table>
+    </el-row>
+
+    <el-row type="flex" justify="end" style="margin-top: 20px;">
       <el-button type="primary" @click="submit">提交</el-button>
-    </div>
+    </el-row>
+
     <el-dialog :visible.sync="dialogOther" title="添加其他费用">
       <el-form ref="otherForm" :rules="otherRules" :model="tempOtherItem">
         <el-form-item label="价格" prop="price" required>
           <!--<el-input v-model="tempOtherItem.price" placeholder="价格" />-->
-          <el-input-number v-model="tempOtherItem.price" :min="1" :max="10" />
+          <el-input-number v-model="tempOtherItem.price" :min="1" :max="999999" />
         </el-form-item>
         <el-form-item label="说明" prop="desc" required>
           <el-input v-model="tempOtherItem.desc" placeholder="详细说明" />
@@ -208,9 +246,23 @@ export default {
       otherRules: {
         desc: [{ required: true, message: '请输入说明' }],
         price: [{ required: true, message: '请输入价格' }]
-      }
+      },
+      statisticsData:[{
+        glassPrice:0,
+        totalPrice:0,
+        otherPrice:0
+      }]
 
     }
+  },
+  watch:{
+    'deliveryData.item':function(newValue, oldValue) {
+      this.calculateTotal()
+    },
+    'deliveryData.other':function(newValue, oldValue) {
+      this.calculateTotal()
+    }
+
   },
   created() {
     this.order = this.$route.query.order
@@ -320,8 +372,31 @@ export default {
     },
     addOther() {
       this.$refs['otherForm'].validate(valid => {
-        console.log(valid)
+        if (!valid) {
+          return
+        }
+        //通过验证
+        this.deliveryData.other.push(this.tempOtherItem)
+        this.tempOtherItem = {}
+        this.dialogOther = false
       })
+    },
+    deleteOther(scope){
+      let index = scope.$index
+      this.deliveryData.other.splice(index,1)
+    },
+    calculateTotal(){
+      let glassPrice = 0;
+      let otherPrice = 0;
+      this.deliveryData.item.map(item=> {
+          glassPrice+= item.totalPrice
+      })
+      this.deliveryData.other.map(item=>{
+        otherPrice+=item.price;
+      })
+      this.statisticsData[0].glassPrice = glassPrice
+      this.statisticsData[0].otherPrice= otherPrice
+      this.statisticsData[0].totalPrice= glassPrice+otherPrice
     }
 
   }
