@@ -8,6 +8,14 @@ export function createByExcel(formData) {
   })
 }
 
+export function createByManual(formData) {
+  return request({
+    url: '/bill/createByManual',
+    method: 'post',
+    data: formData
+  })
+}
+
 export function findAll(data) {
   return request({
     url: '/bill/findAll',

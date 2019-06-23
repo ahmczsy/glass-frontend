@@ -59,8 +59,8 @@
       <el-button type="primary" @click="dialogOther=true">添加送货单其他费用</el-button>
     </div>
     <div style="margin-top: 5px;width: 50%">
-      <el-form ref="form" label-width="80px">
-        <el-form-item label="送货地址" required>
+      <el-form ref="addressForm" label-width="80px" :rules="addressRule" :model="deliveryData">
+        <el-form-item label="送货地址" required prop="address">
           <el-input v-model="deliveryData.address" placeholder="送货地址" />
         </el-form-item>
         <el-form-item label="备注">
@@ -75,89 +75,89 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="left" label="送货单列表:" >
+      <el-table-column align="left" label="送货单列表:">
 
-      <el-table-column align="center" label="楼号">
-        <template slot-scope="scope">
-          {{ scope.row.buildNo }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="规格">
-        <template slot-scope="scope">
-          {{ scope.row.format }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="宽度(mm)">
-        <template slot-scope="scope">
-          {{ scope.row.width }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="高度(mm)">
-        <template slot-scope="scope">
-          {{ scope.row.height }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="送货数量">
-        <template slot-scope="scope">
-          {{ scope.row.amount }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="总面积(m²)">
-        <template slot-scope="scope">
-          {{ scope.row.totalArea }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="单价(元)">
-        <template slot-scope="scope">
-          {{ scope.row.unitPrice }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="总价(元)">
-        <template slot-scope="scope">
-          {{ scope.row.totalPrice }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="备注">
-        <template slot-scope="scope">
-          {{ scope.row.remark }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作"  width="120px">
-        <template slot-scope="scope">
-          <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
+        <el-table-column align="center" label="楼号">
+          <template slot-scope="scope">
+            {{ scope.row.buildNo }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="规格">
+          <template slot-scope="scope">
+            {{ scope.row.format }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="宽度(mm)">
+          <template slot-scope="scope">
+            {{ scope.row.width }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="高度(mm)">
+          <template slot-scope="scope">
+            {{ scope.row.height }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="送货数量">
+          <template slot-scope="scope">
+            {{ scope.row.amount }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="总面积(m²)">
+          <template slot-scope="scope">
+            {{ scope.row.totalArea }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="单价(元)">
+          <template slot-scope="scope">
+            {{ scope.row.unitPrice }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="总价(元)">
+          <template slot-scope="scope">
+            {{ scope.row.totalPrice }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="备注">
+          <template slot-scope="scope">
+            {{ scope.row.remark }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="操作" width="120px">
+          <template slot-scope="scope">
+            <el-button type="danger" plain @click="deleteBill(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
 
     <el-row style="margin-top: 20px" type="flex" justify="end">
-    <el-table
-      :data="deliveryData.other"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row
-      width="100%"
-    >
-      <el-table-column align="left" label="其他费用:" >
-      <el-table-column align="center" label="价格" width="90px">
-        <template slot-scope="scope">
-          {{ scope.row.price }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="说明">
-        <template slot-scope="scope">
-          {{ scope.row.desc }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作" width="120px">
-        <template slot-scope="scope">
-          <el-button type="danger" plain @click="deleteOther(scope)">删除</el-button>
-        </template>
-      </el-table-column>
-      </el-table-column>
-    </el-table>
-  </el-row>
+      <el-table
+        :data="deliveryData.other"
+        element-loading-text="Loading"
+        border
+        fit
+        highlight-current-row
+        width="100%"
+      >
+        <el-table-column align="left" label="其他费用:">
+          <el-table-column align="center" label="价格" width="90px">
+            <template slot-scope="scope">
+              {{ scope.row.price }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="说明">
+            <template slot-scope="scope">
+              {{ scope.row.desc }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="操作" width="120px">
+            <template slot-scope="scope">
+              <el-button type="danger" plain @click="deleteOther(scope)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table-column>
+      </el-table>
+    </el-row>
 
     <el-row type="flex" justify="center" style="margin-top: 20px;">
       <el-table
@@ -168,22 +168,22 @@
         highlight-current-row
         width="100%"
       >
-        <el-table-column align="left" label="统计信息:" >
-        <el-table-column align="center" label="玻璃费用" >
-          <template slot-scope="scope">
-          {{ scope.row.glassPrice }}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="其他费用">
-          <template slot-scope="scope">
-          {{ scope.row.otherPrice }}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="总费用" >
-          <template slot-scope="scope">
-          {{ scope.row.totalPrice }}
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="统计信息:">
+          <el-table-column align="center" label="玻璃费用">
+            <template slot-scope="scope">
+              {{ scope.row.glassPrice }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="其他费用">
+            <template slot-scope="scope">
+              {{ scope.row.otherPrice }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="总费用">
+            <template slot-scope="scope">
+              {{ scope.row.totalPrice }}
+            </template>
+          </el-table-column>
         </el-table-column>
       </el-table>
     </el-row>
@@ -212,8 +212,7 @@
 </template>
 
 <script>
-import { manualInput } from '@/api/order'
-import { findAll as formatFindAll } from '@/api/format'
+import { createByManual } from '@/api/bill'
 
 export default {
   filters: {
@@ -234,12 +233,11 @@ export default {
       detailOption: null,
       sumitBillItem: [],
       deliveryData: {
+        orderId: null,
+        customerId: null,
         address: '',
         item: [],
         other: [],
-        // glassPrice: null,
-        // otherPrice: null,
-        // totalPrice: null,
         remark: null
       },
       tempOtherItem: {},
@@ -247,25 +245,29 @@ export default {
         desc: [{ required: true, message: '请输入说明' }],
         price: [{ required: true, message: '请输入价格' }]
       },
-      statisticsData:[{
-        glassPrice:0,
-        totalPrice:0,
-        otherPrice:0
+      addressRule: {
+        address: [{ required: true, message: '请输入送货地址' }]
+      },
+      statisticsData: [{
+        glassPrice: 0,
+        totalPrice: 0,
+        otherPrice: 0
       }]
 
     }
   },
-  watch:{
-    'deliveryData.item':function(newValue, oldValue) {
+  watch: {
+    'deliveryData.item': function() {
       this.calculateTotal()
     },
-    'deliveryData.other':function(newValue, oldValue) {
+    'deliveryData.other': function() {
       this.calculateTotal()
     }
 
   },
   created() {
     this.order = this.$route.query.order
+    console.log(this.order)
     this.orderDetailList = this.$route.query.orderDetailList
     this.resetBillItem()
     this.buildDetailOption()
@@ -330,7 +332,25 @@ export default {
       })
     },
     submit() {
+      this.$refs['addressForm'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        if (this.deliveryData.item.length === 0) {
+          this.$message({
+            message: '送货单不能为空',
+            type: 'warning',
+            duration: 5 * 1000
+          })
+          return
+        }
+        // 提交
+        console.log('commit.....')
 
+        createByManual(this.deliveryData).then(res => {
+          console.log(res)
+        })
+      })
     },
     orderDetailChange(orderDetailId) {
       const orderDetail = this.findDetailById(orderDetailId)
@@ -375,28 +395,28 @@ export default {
         if (!valid) {
           return
         }
-        //通过验证
+        // 通过验证
         this.deliveryData.other.push(this.tempOtherItem)
         this.tempOtherItem = {}
         this.dialogOther = false
       })
     },
-    deleteOther(scope){
-      let index = scope.$index
-      this.deliveryData.other.splice(index,1)
+    deleteOther(scope) {
+      const index = scope.$index
+      this.deliveryData.other.splice(index, 1)
     },
-    calculateTotal(){
-      let glassPrice = 0;
-      let otherPrice = 0;
-      this.deliveryData.item.map(item=> {
-          glassPrice+= item.totalPrice
+    calculateTotal() {
+      let glassPrice = 0
+      let otherPrice = 0
+      this.deliveryData.item.map(item => {
+        glassPrice += item.totalPrice
       })
-      this.deliveryData.other.map(item=>{
-        otherPrice+=item.price;
+      this.deliveryData.other.map(item => {
+        otherPrice += item.price
       })
       this.statisticsData[0].glassPrice = glassPrice
-      this.statisticsData[0].otherPrice= otherPrice
-      this.statisticsData[0].totalPrice= glassPrice+otherPrice
+      this.statisticsData[0].otherPrice = otherPrice
+      this.statisticsData[0].totalPrice = glassPrice + otherPrice
     }
 
   }
