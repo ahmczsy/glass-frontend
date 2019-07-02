@@ -266,9 +266,15 @@ export default {
 
   },
   created() {
-    this.order = this.$route.query.order
-    console.log(this.order)
-    this.orderDetailList = this.$route.query.orderDetailList
+    this.order = JSON.parse(this.$route.query.order)
+    this.orderDetailList =[]
+    JSON.parse(this.$route.query.orderDetailList).map(item=>{
+      let leftAmount = item.amount -item.deliveredAmount
+      if (leftAmount >0){
+        item.leftAmount = leftAmount
+        this.orderDetailList.push(item)
+      }
+    })
     this.resetBillItem()
     this.buildDetailOption()
   },
@@ -311,8 +317,6 @@ export default {
       this.currentOrderId = null
       this.maxAmount = 9999
       this.resetBillItem()
-      console.log(this.selectedOrderDetailList)
-      console.log(this.orderDetailList)
     },
     deleteBill(row) {
       const orderDetailId = row.orderDetailId
@@ -345,17 +349,21 @@ export default {
           return
         }
         // 提交
-        console.log('commit.....')
-
+        this.deliveryData.customerId = this.order.orderCustomerId
+        this.deliveryData.orderId= this.order.orderId
         createByManual(this.deliveryData).then(res => {
-          console.log(res)
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.$router.back(-1)
         })
       })
     },
     orderDetailChange(orderDetailId) {
       const orderDetail = this.findDetailById(orderDetailId)
       this.currentOrderDetail = orderDetail
-      this.maxAmount = orderDetail.amount
+      this.maxAmount = orderDetail.leftAmount
       this.billItem[0].orderDetailId = orderDetail.orderDetailId
       this.billItem[0].height = orderDetail.height
       this.billItem[0].width = orderDetail.width
@@ -363,7 +371,7 @@ export default {
       this.billItem[0].unitPrice = orderDetail.price
     },
     returnDetail() {
-      this.$router.push({ path: '/order/detail', query: { order: this.order }})
+      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
     },
     findDetailById(id) {
       return this.orderDetailList.find(item => {

@@ -63,9 +63,9 @@
           {{ scope.row.height }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="数量">
+      <el-table-column align="center" label="已送/数量">
         <template slot-scope="scope">
-          {{ scope.row.amount }}
+          {{ scope.row.deliveredAmount}}/{{ scope.row.amount }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="面积(m²)">
@@ -166,7 +166,7 @@ export default {
     }
   },
   created() {
-    this.order = this.$route.query.order
+    this.order = JSON.parse(this.$route.query.order)
     const id = this.order.orderId
     this.uploadData = { orderId: id }
 
@@ -206,10 +206,10 @@ export default {
         })
         // return
       }
-      this.$router.push({ path: '/order/manualAdd', query: { order: this.order }})
+      this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order) }})
     },
     deliveryInit(){
-      this.$router.push({ path: '/order/createDelivery', query: { order: this.order,orderDetailList:this.list }})
+      this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order),orderDetailList:JSON.stringify(this.list )}})
     }
   }
 }

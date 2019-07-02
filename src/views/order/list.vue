@@ -160,7 +160,7 @@ export default {
       this.excleDialogVisible = true
     },
     gotoDetai(order) {
-      this.$router.push({ path: '/order/detail', query: { order: order }})
+      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(order)}})
     },
     submit(form) {
       this.customerList.forEach(customer => {
