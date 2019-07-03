@@ -267,10 +267,10 @@ export default {
   },
   created() {
     this.order = JSON.parse(this.$route.query.order)
-    this.orderDetailList =[]
-    JSON.parse(this.$route.query.orderDetailList).map(item=>{
-      let leftAmount = item.amount -item.deliveredAmount
-      if (leftAmount >0){
+    this.orderDetailList = []
+    JSON.parse(this.$route.query.orderDetailList).map(item => {
+      const leftAmount = item.amount - item.deliveredAmount
+      if (leftAmount > 0) {
         item.leftAmount = leftAmount
         this.orderDetailList.push(item)
       }
@@ -350,7 +350,7 @@ export default {
         }
         // 提交
         this.deliveryData.customerId = this.order.orderCustomerId
-        this.deliveryData.orderId= this.order.orderId
+        this.deliveryData.orderId = this.order.orderId
         createByManual(this.deliveryData).then(res => {
           this.$message({
             message: '操作成功',

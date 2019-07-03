@@ -69,6 +69,9 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-row type="flex" justify="space-between" style="margin-top: 15px;margin-left: 20px">
+        <el-col :span="24">备注：{{ bill.billRemark }}</el-col>
+      </el-row>
     </el-container>
   </div>
 </template>
@@ -98,7 +101,9 @@ export default {
       findDetailByBillId({ billId: billId }).then(res => {
         this.bill = res.data.bill
         this.billDetails = res.data.detail
-        this.billDetails.push({ format: '其他', totalPrice: this.bill.otherPrice, remark: this.bill.otherRemark })
+        this.bill.others.map(item => {
+          this.billDetails.push({ format: '其他费用', totalPrice: item.price, remark: item.desc })
+        })
         this.listLoading = false
       })
     },

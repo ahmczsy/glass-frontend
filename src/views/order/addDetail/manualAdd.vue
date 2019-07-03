@@ -64,7 +64,7 @@ export default {
     }
   },
   created() {
-    this.order = this.$route.query.order
+    this.order = JSON.parse(this.$route.query.order)
     formatFindAll().then(res => {
       this.formatList = res.data
     })
@@ -119,7 +119,7 @@ export default {
       this.addList = [{ key: new Date().getTime() }]
     },
     returnDetail() {
-      this.$router.push({ path: '/order/detail', query: { order: this.order }})
+      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
     }
 
   }

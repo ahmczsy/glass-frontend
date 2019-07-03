@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column align="center" label="已送/数量">
         <template slot-scope="scope">
-          {{ scope.row.deliveredAmount}}/{{ scope.row.amount }}
+          {{ scope.row.deliveredAmount }}/{{ scope.row.amount }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="面积(m²)">
@@ -208,8 +208,8 @@ export default {
       }
       this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order) }})
     },
-    deliveryInit(){
-      this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order),orderDetailList:JSON.stringify(this.list )}})
+    deliveryInit() {
+      this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order), orderDetailList: JSON.stringify(this.list) }})
     }
   }
 }
