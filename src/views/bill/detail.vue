@@ -63,7 +63,7 @@
             {{ scope.row.totalPrice }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="备注">
+        <el-table-column align="center" label="备注"  :show-overflow-tooltip="true" >
           <template slot-scope="scope">
             {{ scope.row.remark }}
           </template>
