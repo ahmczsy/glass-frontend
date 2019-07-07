@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
     <el-button type="warning" @click="downloadExcel">下载送货单</el-button>
+    <a
+      :href="'bill/downloadBillExcel?billId='+billId"
+      class="el-button el-button--primary"
+    >下载送货单2</a>
     <el-container>
       <el-header style="  line-height: 60px;">
         <el-row :gutter="20" type="flex" justify="space-between">
@@ -64,7 +68,7 @@
             {{ scope.row.totalPrice }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="备注"  :show-overflow-tooltip="true" >
+        <el-table-column align="center" label="备注" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             {{ scope.row.remark }}
           </template>
@@ -101,9 +105,16 @@ export default {
   methods: {
     downloadExcel() {
       downloadBillExcel({ 'billId': this.billId }).then(res => {
-        console.log('....')
-        console.log(res)
-        this.download(res)
+        const blob = new Blob(
+          [res.data], { type: 'application/octet-stream' })
+        const aEle = document.createElement('a') // 创建a标签
+        const href = window.URL.createObjectURL(blob) // 创建下载的链接
+        aEle.href = href
+        aEle.download = 'bill.xlsx'// 下载后文件名
+        document.body.appendChild(aEle)
+        aEle.click() // 点击下载
+        document.body.removeChild(aEle) // 下载完成移除元素
+        window.URL.revokeObjectURL(href) // 释放掉blob对象
       })
     },
     loadData(billId) {
