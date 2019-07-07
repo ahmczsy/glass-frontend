@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import fileService from '@/utils/file-request'
 
 export function createByExcel(formData) {
   return request({
@@ -29,5 +30,14 @@ export function findDetailByBillId(param) {
     url: '/bill/findDetailByBillId',
     method: 'get',
     params: param
+  })
+}
+
+export function downloadBillExcel(param) {
+  return fileService({
+    url: '/bill/downloadBillExcel',
+    method: 'get',
+    params: param,
+    responseType: 'arraybuffer'
   })
 }

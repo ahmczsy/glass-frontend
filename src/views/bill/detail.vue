@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <el-button type="warning" @click="downloadExcel">下载送货单</el-button>
     <el-container>
       <el-header style="  line-height: 60px;">
         <el-row :gutter="20" type="flex" justify="space-between">
@@ -77,7 +78,7 @@
 </template>
 
 <script>
-import { findDetailByBillId } from '@/api/bill'
+import { findDetailByBillId, downloadBillExcel } from '@/api/bill'
 
 export default {
   filters: {},
@@ -89,13 +90,22 @@ export default {
         billDate: ''
       },
       listLoading: true,
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      billId: null
     }
   },
   created() {
-    this.loadData(this.$route.query.id)
+    this.billId = this.$route.query.id
+    this.loadData(this.billId)
   },
   methods: {
+    downloadExcel() {
+      downloadBillExcel({ 'billId': this.billId }).then(res => {
+        console.log('....')
+        console.log(res)
+        this.download(res)
+      })
+    },
     loadData(billId) {
       this.listLoading = true
       findDetailByBillId({ billId: billId }).then(res => {
