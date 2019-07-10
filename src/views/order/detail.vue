@@ -21,17 +21,25 @@
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-circle-plus-outline"
         @click="manualAddInit"
-      >手动添加订单详情
+      >添加订单详情
       </el-button>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="deliveryInit"
       >新建送货单
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-plus"
+        @click="gotoBill"
+      >查看送货单
       </el-button>
     </div>
 
@@ -210,6 +218,9 @@ export default {
     },
     deliveryInit() {
       this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order), orderDetailList: JSON.stringify(this.list) }})
+    },
+    gotoBill(){
+      this.$router.push({path:'/bill/list',query:{orderId:this.order.orderId}})
     }
   }
 }

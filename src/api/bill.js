@@ -25,6 +25,13 @@ export function findAll(data) {
   })
 }
 
+export function findByOrderId(data) {
+  return request({
+    url: '/bill/findByOrderId',
+    method: 'get',
+    params: data
+  })
+}
 export function findDetailByBillId(param) {
   return request({
     url: '/bill/findDetailByBillId',

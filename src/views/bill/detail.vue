@@ -1,10 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="warning" @click="downloadExcel">下载送货单</el-button>
-    <a
-      :href="'bill/downloadBillExcel?billId='+billId"
-      class="el-button el-button--primary"
-    >下载送货单2</a>
+    <el-button type="primary" @click="downloadExcel" icon="el-icon-download">下载送货单</el-button>
     <el-container>
       <el-header style="  line-height: 60px;">
         <el-row :gutter="20" type="flex" justify="space-between">
@@ -83,6 +79,7 @@
 
 <script>
 import { findDetailByBillId, downloadBillExcel } from '@/api/bill'
+import { download } from '@/utils/download'
 
 export default {
   filters: {},
@@ -105,16 +102,7 @@ export default {
   methods: {
     downloadExcel() {
       downloadBillExcel({ 'billId': this.billId }).then(res => {
-        const blob = new Blob(
-          [res.data], { type: 'application/octet-stream' })
-        const aEle = document.createElement('a') // 创建a标签
-        const href = window.URL.createObjectURL(blob) // 创建下载的链接
-        aEle.href = href
-        aEle.download = 'bill.xlsx'// 下载后文件名
-        document.body.appendChild(aEle)
-        aEle.click() // 点击下载
-        document.body.removeChild(aEle) // 下载完成移除元素
-        window.URL.revokeObjectURL(href) // 释放掉blob对象
+        download(res.data)
       })
     },
     loadData(billId) {

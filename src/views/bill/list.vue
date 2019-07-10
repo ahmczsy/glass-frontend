@@ -42,12 +42,14 @@
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination
       background
       layout="prev, pager, next"
       :current-page.sync="pageQuery.curPage"
       :page-size.sync="pageQuery.capacity"
       :page-count="50"
+      v-if="isAll"
       style=" padding: 32px 16px;"
       @current-change="fetchData"
     />
@@ -55,7 +57,7 @@
 </template>
 
 <script>
-import { findAll } from '@/api/bill'
+import { findAll ,findByOrderId} from '@/api/bill'
 
 export default {
   filters: {},
@@ -66,11 +68,22 @@ export default {
       pageQuery: {
         curPage: 1,
         capacity: 15
-      }
+      },
+      isAll:null,
+      orderId:null,
     }
   },
   created() {
-    this.fetchData()
+     this.orderId = this.$route.query.orderId ||0
+    console.log(this.orderId)
+    console.log("-=====")
+    this.isAll = this.orderId===0
+    if (this.isAll) {
+      this.fetchData()
+    }else{
+      this.fetchDataByOrderId()
+    }
+
   },
   methods: {
     fetchData() {
@@ -79,7 +92,15 @@ export default {
         this.listLoading = false
         this.list = response.data
       })
+    },
+    fetchDataByOrderId(){
+      this.listLoading = true
+      findByOrderId({"orderId":this.orderId}).then(res=>{
+        this.listLoading = false
+        this.list = res.data
+      })
     }
+
   }
 }
 </script>
