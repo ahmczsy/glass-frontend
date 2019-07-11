@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="add">添加</el-button>
+      <el-button class="filter-item" style="margin-bottom: 10px;" type="primary" icon="el-icon-plus" @click="add">添加订单</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -39,12 +39,21 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <!--          <router-link :to="'/order/detail?id='+scope.row.orderId">-->
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="gotoDetai(scope.row)">查看详情</el-button>
+          <el-button type="primary" size="small" icon="el-icon-document" @click="gotoDetai(scope.row)">查看详情</el-button>
           <!--          </router-link>-->
-          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>
+<!--          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>-->
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :current-page.sync="pageQuery.curPage"
+      :page-size.sync="pageQuery.capacity"
+      :page-count="50"
+      style=" padding: 32px 16px;"
+      @current-change="fetchData"></el-pagination>
 
     <el-dialog :visible.sync="dialogFormVisible" title="新增订单">
       <el-form ref="orderForm" :rules="rules" :model="orderForm" label-position="left" label-width="80px" style="width: 400px; margin-left:50px;">
@@ -139,6 +148,10 @@ export default {
         customerId: null,
         openid: ''
       },
+      pageQuery: {
+        curPage: 1,
+        capacity: 15
+      },
       customerList: null
     }
   },
@@ -200,7 +213,7 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getOrderList().then(response => {
+      getOrderList(this.pageQuery).then(response => {
         this.listLoading = false
         this.list = response.data
       })

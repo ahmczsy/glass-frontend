@@ -3,8 +3,8 @@ import request from '@/utils/request'
 export function getOrderList(params) {
   return request({
     url: '/order/findAll',
-    method: 'get',
-    params
+    method: 'post',
+    data: params
   })
 }
 

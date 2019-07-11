@@ -300,9 +300,8 @@ export default {
         return
       }
       // 验证通过
-      console.log(data)
-      data.totalArea = data.height * data.width * data.amount / 1000000
-      data.totalPrice = data.unitPrice * data.totalArea
+      data.totalArea = parseFloat((data.height * data.width * data.amount / 1000000).toFixed(2))
+      data.totalPrice = parseFloat((data.unitPrice * data.totalArea).toFixed(2))
       this.deliveryData.item.push(data)
 
       // 从orderDetailList，detailOption移除，添加到selectedOrderDetailList中

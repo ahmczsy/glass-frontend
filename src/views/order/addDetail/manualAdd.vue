@@ -1,7 +1,9 @@
 <template>
   <div class="app-container">
-    <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
-    <el-button type="warning" @click="resetDialogData">重置数据</el-button>
+    <div class="filter-container" style="margin-bottom: 10px">
+      <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
+      <el-button type="warning" @click="resetDialogData">重置数据</el-button>
+    </div>
     <vxe-table
       ref="refTable"
       border
@@ -42,6 +44,7 @@ export default {
   data() {
     return {
       order: null,
+      addType: null,
       addList: [{ key: new Date() }],
       formatList: [],
       addRules: {
@@ -65,6 +68,7 @@ export default {
   },
   created() {
     this.order = JSON.parse(this.$route.query.order)
+    this.addType = this.$route.query.addType
     formatFindAll().then(res => {
       this.formatList = res.data
     })
@@ -82,8 +86,12 @@ export default {
           item.amount = parseInt(item.amount)
           item.price = parseFloat(item.price)
         })
-        manualInput({ orderId: this.order.orderId, detailList: this.addList }).then(res => {
-          this.$router.push({ path: '/order/detail', query: { order: this.order }})
+        manualInput({
+          orderId: this.order.orderId,
+          detailList: this.addList,
+          addType: this.addType }
+        ).then(res => {
+          this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order)}})
         })
       })
     },

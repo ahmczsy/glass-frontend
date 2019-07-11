@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
+    <div class="filter-container" style="margin-bottom: 10px">
+      <!--      <el-button-->
+      <!--        class="filter-item"-->
+      <!--        style="margin-left: 10px;"-->
+      <!--        type="primary"-->
+      <!--        icon="el-icon-upload"-->
+      <!--        @click="dialogFormVisible=true"-->
+      <!--      >上传订单详情-->
+      <!--      </el-button>-->
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-upload"
-        @click="dialogFormVisible=true"
-      >上传订单详情
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
+        type="warning"
         icon="el-icon-edit"
         @click="dialogOrderStatus=true"
       >修改订单状态
@@ -21,9 +21,17 @@
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        icon="el-icon-circle-plus-outline"
+        icon="el-icon-plus"
         @click="manualAddInit"
       >添加订单详情
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-plus"
+        @click="userAdditional"
+      >用户补单
       </el-button>
       <el-button
         class="filter-item"
@@ -36,8 +44,8 @@
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-plus"
+        type="success"
+        icon="el-icon-document"
         @click="gotoBill"
       >查看送货单
       </el-button>
@@ -53,7 +61,7 @@
     >
       <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.$index+1 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="规格">
@@ -195,6 +203,11 @@ export default {
     updateOrderStatus() {
       updateOrder({ orderId: this.order.orderId, orderStatus: this.order.orderStatus }).then(res => {
         this.dialogOrderStatus = false
+        this.$message({
+          message: '修改订单状态成功',
+          type: 'success',
+          duration: 5 * 1000
+        })
       })
     },
     manualAddInit() {
@@ -214,13 +227,16 @@ export default {
         })
         // return
       }
-      this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order) }})
+      this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order), addType: 2 }})
     },
     deliveryInit() {
       this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order), orderDetailList: JSON.stringify(this.list) }})
     },
-    gotoBill(){
-      this.$router.push({path:'/bill/list',query:{orderId:this.order.orderId}})
+    gotoBill() {
+      this.$router.push({ path: '/bill/list', query: { orderId: this.order.orderId }})
+    },
+    userAdditional() {
+      this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order), addType: 3 }})
     }
   }
 }
