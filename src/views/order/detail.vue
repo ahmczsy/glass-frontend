@@ -212,11 +212,7 @@ export default {
     },
     manualAddInit() {
       if (this.order.orderStatus !== 1) {
-        this.$message({
-          message: '当前订单状态以关闭或完成，不可以再编辑或新增数据',
-          type: 'warning',
-          duration: 5 * 1000
-        })
+        this.showTipMessage()
         return
       }
       if (this.list.length !== 0) {
@@ -225,18 +221,33 @@ export default {
           type: 'warning',
           duration: 5 * 1000
         })
-        // return
+        return
       }
       this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order), addType: 2 }})
     },
     deliveryInit() {
+      if (this.order.orderStatus !== 1) {
+        this.showTipMessage()
+        return
+      }
       this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order), orderDetailList: JSON.stringify(this.list) }})
     },
     gotoBill() {
       this.$router.push({ path: '/bill/list', query: { order: JSON.stringify(this.order) }})
     },
     userAdditional() {
+      if (this.order.orderStatus !== 1) {
+        this.showTipMessage()
+        return
+      }
       this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order), addType: 3 }})
+    },
+    showTipMessage() {
+      this.$message({
+        message: '当前订单状态以关闭或完成，不可以再编辑或新增数据',
+        type: 'warning',
+        duration: 5 * 1000
+      })
     }
   }
 }
