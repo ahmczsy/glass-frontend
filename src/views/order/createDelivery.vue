@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
-    <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
+    <div class="filter-container" style="margin-bottom: 10px">
+      <el-button type="warning" @click="returnDetail">返回订单详情</el-button>
+    </div>
     <el-table
       :data="billItem"
       element-loading-text="Loading"
@@ -370,7 +372,21 @@ export default {
       this.billItem[0].unitPrice = orderDetail.price
     },
     returnDetail() {
-      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
+      const doing = () => {
+        this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
+      }
+      if (this.deliveryData.item.length > 0) {
+        this.$confirm('送货单还未保存，是否返回？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          doing()
+        }).catch(() => {
+        })
+      } else {
+        doing()
+      }
     },
     findDetailById(id) {
       return this.orderDetailList.find(item => {

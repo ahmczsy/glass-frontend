@@ -18,10 +18,15 @@
       </el-table-column>
       <el-table-column label="名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderName }}</span>
+          {{ scope.row.orderName }}
         </template>
       </el-table-column>
-      <el-table-column label="描述" align="center">
+      <el-table-column label="客户名称" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.orderCustomerTrueName }}
+        </template>
+      </el-table-column>
+      <el-table-column label="描述" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.orderDesc }}
         </template>
@@ -40,20 +45,22 @@
         <template slot-scope="scope">
           <!--          <router-link :to="'/order/detail?id='+scope.row.orderId">-->
           <el-button type="primary" size="small" icon="el-icon-document" @click="gotoDetai(scope.row)">查看详情</el-button>
+          <el-button type="warning" size="small" icon="el-icon-edit" @click="updateCustomer(scope.row)">修改客户</el-button>
           <!--          </router-link>-->
-<!--          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>-->
+          <!--          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>-->
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
       background
-      layout="prev, pager, next"
+      layout="prev, pager, next,jumper"
       :current-page.sync="pageQuery.curPage"
       :page-size.sync="pageQuery.capacity"
-      :page-count="50"
+      :page-count="9999"
       style=" padding: 32px 16px;"
-      @current-change="fetchData"></el-pagination>
+      @current-change="fetchData"
+    />
 
     <el-dialog :visible.sync="dialogFormVisible" title="新增订单">
       <el-form ref="orderForm" :rules="rules" :model="orderForm" label-position="left" label-width="80px" style="width: 400px; margin-left:50px;">
@@ -62,7 +69,7 @@
           <el-input v-model="orderForm.name" />
         </el-form-item>
 
-        <el-form-item label="选择客户" prop="customerId" required>
+        <el-form-item label="选择客户" prop="customerId" >
           <el-select v-model="orderForm.customerId" filterable placeholder="请选择">
             <el-option
               v-for="item in customerList"
@@ -81,6 +88,27 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="submit('orderForm')">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :visible.sync="dialogUpdateCustomerVisible" title="修改客户">
+      <el-form ref="updateCustomerForm" :rules="updateRules" :model="updateCustomerForm" label-position="left" label-width="80px" style="width: 400px; margin-left:50px;">
+
+        <el-form-item label="选择客户" prop="orderCustomerId" required>
+          <el-select v-model="updateCustomerForm.orderCustomerId" filterable placeholder="请选择">
+            <el-option
+              v-for="item in customerList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogUpdateCustomerVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateCustomerSubmit('updateCustomerForm')">提交</el-button>
       </div>
     </el-dialog>
 
@@ -104,7 +132,7 @@
 </template>
 
 <script>
-import { getOrderList, createOrder } from '@/api/order'
+import { getOrderList, createOrder, updateOrder } from '@/api/order'
 import { getCustomerList } from '@/api/customer'
 import { createByExcel } from '@/api/bill'
 
@@ -133,20 +161,30 @@ export default {
         name: [
           { required: true, message: '请输入订单名称', trigger: 'blur' },
           { min: 1, max: 100, message: '长度为1-100个字符' }
-        ],
+        ]
+        // customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }]
+      },
+      updateRules: {
         customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }]
-
       },
       uploadData: null,
       dialogFormVisible: false,
       excleDialogVisible: false,
+      dialogUpdateCustomerVisible: false,
       list: null,
       listLoading: true,
       orderForm: {
         name: null,
         desc: '',
         customerId: null,
-        openid: ''
+        openid: '',
+        customerTrueName: ''
+      },
+      updateCustomerForm: {
+        orderCustomerId: null,
+        openid: null,
+        orderId: null,
+        customerTrueName: ''
       },
       pageQuery: {
         curPage: 1,
@@ -173,12 +211,13 @@ export default {
       this.excleDialogVisible = true
     },
     gotoDetai(order) {
-      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(order)}})
+      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(order) }})
     },
     submit(form) {
       this.customerList.forEach(customer => {
         if (customer.id === this.orderForm.customerId) {
           this.orderForm.openid = customer.openid
+          this.orderForm.customerTrueName = customer.name
         }
       })
       this.$refs[form].validate(valid => {
@@ -196,12 +235,56 @@ export default {
         }
       })
     },
+    updateCustomerSubmit(form) {
+      this.customerList.forEach(customer => {
+        if (customer.id === this.updateCustomerForm.orderCustomerId) {
+          this.updateCustomerForm.openid = customer.openid
+          this.updateCustomerForm.customerTrueName = customer.name
+        }
+      })
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          updateOrder(this.updateCustomerForm).then(res => {
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+            this.dialogFormVisible = false
+            this.$router.go(0)
+          })
+        } else {
+          return false
+        }
+      })
+    },
     add() {
-      getCustomerList().then(response => {
-        this.customerList = response.data
+      const doing = () => {
         this.resetTemp()
         this.dialogFormVisible = true
-      })
+      }
+      if (this.customerList === null) {
+        getCustomerList().then(response => {
+          this.customerList = response.data
+          doing()
+        })
+      } else {
+        doing()
+      }
+    },
+    updateCustomer(row) {
+      const doing = () => {
+        this.resetTemp()
+        this.dialogUpdateCustomerVisible = true
+        this.updateCustomerForm.orderId = row.orderId
+      }
+      if (this.customerList === null) {
+        getCustomerList().then(response => {
+          this.customerList = response.data
+          doing()
+        })
+      } else {
+        doing()
+      }
     },
     resetTemp() {
       this.orderForm = {
@@ -209,6 +292,11 @@ export default {
         desc: '',
         customerId: null,
         openid: ''
+      }
+      this.updateCustomerForm = {
+        orderCustomerId: null,
+        openid: null,
+        orderId: null
       }
     },
     fetchData() {

@@ -233,7 +233,7 @@ export default {
       this.$router.push({ path: '/order/createDelivery', query: { order: JSON.stringify(this.order), orderDetailList: JSON.stringify(this.list) }})
     },
     gotoBill() {
-      this.$router.push({ path: '/bill/list', query: { orderId: this.order.orderId }})
+      this.$router.push({ path: '/bill/list', query: { order: JSON.stringify(this.order) }})
     },
     userAdditional() {
       this.$router.push({ path: '/order/manualAdd', query: { order: JSON.stringify(this.order), addType: 3 }})

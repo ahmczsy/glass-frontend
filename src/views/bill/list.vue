@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+    <div class="filter-container" style="margin-bottom: 10px">
+      <el-button v-if="!isAll" type="warning" @click="returnDetail">返回订单详情</el-button>
+    </div>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -46,12 +49,13 @@
     <el-pagination
       v-if="isAll"
       background
-      layout="prev, pager, next"
+      layout="prev, pager, next,jumper"
       :current-page.sync="pageQuery.curPage"
       :page-size.sync="pageQuery.capacity"
-      :page-count="50"
+      :page-count="9999"
       style=" padding: 32px 16px;"
-      @current-change="fetchData"></el-pagination>
+      @current-change="fetchData"
+    />
   </div>
 </template>
 
@@ -69,12 +73,17 @@ export default {
         capacity: 15
       },
       isAll: null,
-      orderId: null
+      order: null
     }
   },
   created() {
-    this.orderId = this.$route.query.orderId || 0
-    this.isAll = this.orderId === 0
+    const text = this.$route.query.order || ''
+    if (text === '') {
+      this.isAll = true
+    }else{
+      this.order = JSON.parse(text)
+      this.isAll = false
+    }
     if (this.isAll) {
       this.fetchData()
     } else {
@@ -91,12 +100,14 @@ export default {
     },
     fetchDataByOrderId() {
       this.listLoading = true
-      findByOrderId({ 'orderId': this.orderId }).then(res => {
+      findByOrderId({ 'orderId': this.order.orderId }).then(res => {
         this.listLoading = false
         this.list = res.data
       })
+    },
+    returnDetail() {
+      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
     }
-
   }
 }
 </script>

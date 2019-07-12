@@ -43,10 +43,10 @@
     </el-table>
     <el-pagination
       background
-      layout="prev, pager, next"
+      layout="prev, pager, next,jumper"
       :current-page.sync="pageQuery.curPage"
       :page-size.sync="pageQuery.capacity"
-      :page-count="50"
+      :page-count="9999"
       style=" padding: 32px 16px;"
       @current-change="fetchData"
     />

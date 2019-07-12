@@ -91,7 +91,7 @@ export default {
           detailList: this.addList,
           addType: this.addType }
         ).then(res => {
-          this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order)}})
+          this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
         })
       })
     },
@@ -124,10 +124,40 @@ export default {
       this.addList[event.rowIndex].format = format
     },
     resetDialogData() {
-      this.addList = [{ key: new Date().getTime() }]
+      const doing = () => {
+        this.addList = [{ key: new Date().getTime() }]
+      }
+      if (this.addList.length > 1) {
+        this.$confirm('此操作将清空已添加数据，是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          doing()
+        }).catch(() => {
+
+        })
+      } else {
+        doing()
+      }
     },
     returnDetail() {
-      this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
+      const doing = () => {
+        this.$router.push({ path: '/order/detail', query: { order: JSON.stringify(this.order) }})
+      }
+      if (this.addList.length > 1) {
+        this.$confirm('尺寸还未上传，返回不会保留当前数据，是否返回？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          doing()
+        }).catch(() => {
+
+        })
+      } else {
+        doing()
+      }
     }
 
   }
