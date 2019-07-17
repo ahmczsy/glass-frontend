@@ -80,7 +80,7 @@ export default {
     const text = this.$route.query.order || ''
     if (text === '') {
       this.isAll = true
-    }else{
+    } else {
       this.order = JSON.parse(text)
       this.isAll = false
     }

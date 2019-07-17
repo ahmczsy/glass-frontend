@@ -46,7 +46,7 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="规格ID" prop="id" required>
-          <el-input v-model.number="newFormat.id"/>
+          <el-input v-model.number="newFormat.id" />
         </el-form-item>
         <el-form-item label="规格名称" prop="name" required>
           <el-input v-model="newFormat.name" />
@@ -76,7 +76,7 @@ export default {
         ],
         id: [
           { required: true, message: '不能为空' },
-          { type: 'number', message: '必须为数字' },
+          { type: 'number', message: '必须为数字' }
         ]
       },
       dialogVisible: false,

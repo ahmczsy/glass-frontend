@@ -69,7 +69,7 @@
           <el-input v-model="orderForm.name" />
         </el-form-item>
 
-        <el-form-item label="选择客户" prop="customerId" >
+        <el-form-item label="选择客户" prop="customerId">
           <el-select v-model="orderForm.customerId" filterable placeholder="请选择">
             <el-option
               v-for="item in customerList"

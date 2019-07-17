@@ -64,7 +64,7 @@ export const constantRoutes = [
         path: 'list',
         name: '订单列表',
         component: () => import('@/views/order/list'),
-        meta: { title: '订单列表', icon: 'list' },
+        meta: { title: '订单列表', icon: 'list' }
 
       },
       {

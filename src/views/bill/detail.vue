@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="downloadExcel" icon="el-icon-download">下载送货单</el-button>
+    <el-button type="primary" icon="el-icon-download" @click="downloadExcel">下载送货单</el-button>
     <el-container>
       <el-header style="  line-height: 60px;">
         <el-row :gutter="20" type="flex" justify="space-between">
