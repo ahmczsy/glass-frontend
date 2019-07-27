@@ -44,8 +44,9 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <!--          <router-link :to="'/order/detail?id='+scope.row.orderId">-->
-          <el-button type="primary" size="small" icon="el-icon-document" @click="gotoDetai(scope.row)">查看详情</el-button>
+          <el-button type="primary" size="small" icon="el-icon-document" @click="gotoDetai(scope.row)">查看</el-button>
           <el-button type="warning" size="small" icon="el-icon-edit" @click="updateCustomer(scope.row)">修改客户</el-button>
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteOrder(scope.row)">删除</el-button>
           <!--          </router-link>-->
           <!--          <el-button type="primary" size="small" icon="el-icon-upload" @click="createBill(scope.row.orderId,scope.row.orderCustomerId)">上传送货单</el-button>-->
         </template>
@@ -255,6 +256,24 @@ export default {
         } else {
           return false
         }
+      })
+    },
+    deleteOrder(row) {
+      this.$confirm('将删除订单，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        updateOrder({ orderId: row.orderId, orderStatus: 4 }).then(res => {
+          this.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 5 * 1000
+          })
+        })
+        this.$router.go(0)
+      }).catch(() => {
+
       })
     },
     add() {
