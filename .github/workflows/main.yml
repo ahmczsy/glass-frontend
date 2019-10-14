@@ -28,6 +28,7 @@ jobs:
           FTP_SERVER: 158.101.20.77
           FTP_USERNAME: root
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          METHOD: sftp
           LOCAL_DIR: dist
           REMOTE_DIR: /root/glass/action_test
           ARGS: --delete
