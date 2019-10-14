@@ -24,7 +24,7 @@ jobs:
 
       - name: deploy to server
         uses: SamKirkland/FTP-Deploy-Action@2.0.0
-        evn:
+        env:
           FTP_SERVER: 158.101.20.77
           FTP_USERNAME: root
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
