@@ -22,13 +22,27 @@ jobs:
         env:
           CI: true
 
+      - name: backup admin-web
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          password:  ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            cp -r /root/glass/admin-web /root/glass/admin-web-old
+            
       - name: deploy to server
         uses: SamKirkland/FTP-Deploy-Action@2.0.0
         env:
-          FTP_SERVER: 158.101.20.77
+          FTP_SERVER: ${{ secrets.SERVER_IP }}
           FTP_USERNAME: root
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           METHOD: sftp
           LOCAL_DIR: dist
-          REMOTE_DIR: /root/glass/action_test
+          REMOTE_DIR: /root/glass/admin-web
           ARGS: --delete
+          
+     
+                  
+          
