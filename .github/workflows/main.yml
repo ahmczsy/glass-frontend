@@ -1,6 +1,9 @@
 name: Node CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -31,7 +34,7 @@ jobs:
           port: 22
           script: |
             cp -r /root/glass/admin-web /root/glass/admin-web-old
-            
+
       - name: deploy to server
         uses: SamKirkland/FTP-Deploy-Action@2.0.0
         env:
@@ -42,7 +45,3 @@ jobs:
           LOCAL_DIR: dist
           REMOTE_DIR: /root/glass/admin-web
           ARGS: --delete
-          
-     
-                  
-          
